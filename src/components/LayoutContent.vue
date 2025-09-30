@@ -6,7 +6,7 @@
 <style scoped>
 .content {
   margin: 10px;
-  min-height: 88vh;
+  flex: 1;
   background-color: #fff;
   padding: 20px;
   border-radius: 10px;

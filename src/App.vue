@@ -19,13 +19,10 @@ onMounted(fetchMenu);
           <Menu :menuData="menuStore.menuList" />
         </t-aside>
         <t-layout>
-          <LayoutContent>
-            <router-view></router-view>
-          </LayoutContent>
-          <t-footer
-            >Copyright @ 2019-{{ new Date().getFullYear() }} Tencent. All Rights
-            Reserved</t-footer
-          >
+          <router-view></router-view>
+          <p class="footer">Copyright @ 2025-{{ new Date().getFullYear() }} MoonSuite. All Rights
+            Reserved</p>
+        
         </t-layout>
       </t-layout>
     </t-layout>
@@ -39,5 +36,16 @@ onMounted(fetchMenu);
   justify-content: space-between;
   height: 100vh;
   color: #000;
+}
+.footer{
+  width: 100%;
+  text-align: center;
+  color: #909090;
+  padding:4px 0 12px 0;
+  margin: 0;
+}
+:deep(.t-layout__sider) {
+  max-width: 232px;
+  width: auto;
 }
 </style>

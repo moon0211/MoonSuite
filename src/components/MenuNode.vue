@@ -36,11 +36,12 @@ const props = defineProps({
       ["submenu", "menuItem"].includes(val.type) && val.value && val.title,
   },
 });
-console.log("props: ", props);
 const emit = defineEmits(["router-change"]);
 
 const handleClick = (node) => {
+console.log('handleClick: ', node);
   if (node.type === "menuItem" && node) {
+    console.log("node: ", node);
     emit("router-change", node);
   }
 };
