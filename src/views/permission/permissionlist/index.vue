@@ -1,3 +1,3 @@
 <template>
-    <div>权限列表页面</div>
+  <layout-content>权限列表页面</layout-content>
 </template>
