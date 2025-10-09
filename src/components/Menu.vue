@@ -49,7 +49,6 @@ const router = useRouter();
  * @returns {Array|null} 根菜单value和子菜单value的数组，未找到则返回null
  */
 const findRootAndChildValue = (childValue, menuList, pathList = []) => {
-  console.log("menuList: ", menuList?.length);
   // 遍历菜单列表
   for (const menu of menuList) {
     // 如果是子菜单容器且有子项
