@@ -3,46 +3,62 @@ import { getMenuList } from '../api/menu'
 
 export const useMenuStore = defineStore('menu', {
     state: () => ({
-        menuList: [],
-        menuTable: [],
+        menuList: [],//菜单列表（nav导航栏）
+        routerList: [],//路由列表
+        menuTable: [],//菜单管理列表（用于table）
         isLoading: false,
         error: null,
-        hasAddedRoutes:false
+        hasAddedRoutes: false
     }),
     actions: {
         async fetchMenuList(type = 'menu') {
             try {
                 this.isLoading = true;
                 this.error = null;
-                // 使用await等待请求完成，并返回结果
                 const res = await getMenuList({ format: type });
                 this.menuList = res.data;
-                return res.data; // 可选：返回数据方便外部使用
+                return res.data;
             } catch (err) {
                 this.error = err;
-                throw err; // 抛出错误让调用方处理
+                throw err;
             } finally {
                 this.isLoading = false;
             }
         },
-        // 修复fetchMenuTable
-        async fetchMenuTable(type = 'table') {
+        async fetchRouterList(type = 'table') {
             try {
                 this.isLoading = true;
                 this.error = null;
-                // 关键：使用await等待接口请求完成
                 const res = await getMenuList({ format: type });
-                this.menuTable = res.data;
-                return res.data; // 可选：返回数据方便外部使用
+                this.routerList = res.data;
+                return res.data;
             } catch (err) {
                 this.error = err;
-                throw err; // 抛出错误让调用方处理
+                throw err;
+            } finally {
+                this.isLoading = false;
+            }
+        },
+        async fetchMenuTable(type = 'menu', page = 1, pageSize = 10) {
+            try {
+                this.isLoading = true;
+                this.error = null;
+                const res = await getMenuList({ format: type, page, pageSize });
+                this.menuTable = res.data;
+                console.log('his.menuTable : ',this.menuTable );
+                return res.data;
+            } catch (err) {
+                this.error = err;
+                throw err;
             } finally {
                 this.isLoading = false;
             }
         },
         clearMenuList() {
             this.menuList = []
+        },
+        clearRouterList() {
+            this.routerList = []
         },
         clearMenuTable() {
             this.menuTable = []

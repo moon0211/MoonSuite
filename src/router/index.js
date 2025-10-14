@@ -38,11 +38,11 @@ router.beforeEach(async (to, from, next) => {
         return next();
     }
     try {
-        if (!menuStore.menuTable || menuStore.menuTable.length === 0) {
-            await menuStore.fetchMenuTable('table');
+        if (!menuStore.routerList || menuStore.routerList.length === 0) {
+            await menuStore.fetchRouterList('table');
         }
 
-        const dynamicRoutes = generateRoutes(menuStore.menuTable);
+        const dynamicRoutes = generateRoutes(menuStore.routerList);
         dynamicRoutes.forEach(route => {
             router.addRoute(route);
         });
