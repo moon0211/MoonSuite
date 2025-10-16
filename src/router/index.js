@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import { useMenuStore } from '../store/menu'
+import { useMenuStore } from '@/store/menu'
 
 const routes = [
 ]
@@ -25,6 +25,8 @@ function generateRoutes(menuData) {
                     requiresAuth: true
                 }
             }
+            console.log('route: ', route.component);
+
             routes.push(route)
         }
     })

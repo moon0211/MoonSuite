@@ -32,10 +32,10 @@ export function useMenu() {
             ],
         },
         {
-            label: "路由路径",
+            label: "path",
             field: "value",
             type: "input",
-            placeholder: "请输入路由路径",
+            placeholder: "请输入path",
             defaultValue: "",
             props: {
                 clearable: true,

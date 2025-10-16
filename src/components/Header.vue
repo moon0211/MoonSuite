@@ -7,7 +7,7 @@
         <!-- <img
           width="136"
           class="logo"
-          src="../assets/logo.png"
+          src="@/assets/logo.png"
           alt="logo"
         /> -->
       </template>

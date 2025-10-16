@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
-import { getMenuList } from '../api/menu'
-
+import { getMenuList } from '@/api/menu'
 export const useMenuStore = defineStore('menu', {
     state: () => ({
         menuList: [],//菜单列表（nav导航栏）
@@ -45,7 +44,7 @@ export const useMenuStore = defineStore('menu', {
                 this.error = null;
                 const res = await getMenuList({ format: type, page, pageSize });
                 this.menuTable = res.data;
-                console.log('his.menuTable : ',this.menuTable );
+                console.log('his.menuTable : ', this.menuTable);
                 return res.data;
             } catch (err) {
                 this.error = err;

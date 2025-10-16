@@ -35,11 +35,11 @@
         @expanded-tree-nodes-change="onExpandedTreeNodesChange"
       ></t-enhanced-table>
     </div>
-    <menuEditor v-model:visible="dialogVisible" />
+    <menuEditor v-model:visible="dialogVisible" @submit="refreshMenu" />
   </layout-content>
 </template>
 <script setup lang="jsx">
-import QueryArea from "../../components/QueryArea.vue";
+import QueryArea from "@/components/QueryArea.vue";
 import menuEditor from "./menuEditor/index.vue"
 import { useMenu } from "./index.js";
 const { queryFields, initialQueryData, isloading, search } = useMenu();
@@ -56,7 +56,7 @@ import {
   MoveIcon,
 } from "tdesign-icons-vue-next";
 
-import { useMenuStore } from '../../store/menu'
+import { useMenuStore } from '@/store/menu'
 const data = ref([]);
 const expandAll = ref(false);
 const pagination = reactive({
@@ -79,7 +79,13 @@ pagination.current = currentPage;
 
 
 }
+const refreshMenu= async()=>{
+    const menuStore = useMenuStore();
+ await getData()
+ await menuStore.fetchMenuList();
+ await menuStore.fetchRouterList();
 
+}
 const tableRef = ref(null);
 const lazyLoadingData = ref(null);
 
