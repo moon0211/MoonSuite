@@ -9,7 +9,7 @@
   <layout-content>
     <div>
       <div class="table-op">
-        <t-button @click="appendToRoot">添加菜单</t-button>
+        <t-button @click="openDialog()">添加菜单</t-button>
 
         <t-button
           theme="default"
@@ -35,7 +35,10 @@
         @expanded-tree-nodes-change="onExpandedTreeNodesChange"
       ></t-enhanced-table>
     </div>
-    <menuEditor v-model:visible="dialogVisible" @submit="refreshMenu" />
+    <menuEditor
+      @submit="refreshMenu"
+      ref="menuEditorRef"
+    />
   </layout-content>
 </template>
 <script setup lang="jsx">
@@ -43,7 +46,7 @@ import QueryArea from "@/components/QueryArea.vue";
 import menuEditor from "./menuEditor/index.vue"
 import { useMenu } from "./index.js";
 const { queryFields, initialQueryData, isloading, search } = useMenu();
-
+import {deleteMenu} from "@/api/menu";
 import { ref, reactive, computed , onMounted } from "vue";
 import {
   EnhancedTable as TEnhancedTable,
@@ -102,11 +105,13 @@ const treeConfig = reactive({
 
 
 const onDeleteConfirm = (row) => {
-  // 移除当前节点及其所有子节点
-  tableRef.value.remove(row.key);
-
-  // 仅移除所有子节点
-  // tableRef.value.removeChildren(row.key);
+  
+  deleteMenu(row.id).then((res)=>{
+    if(res.success===200){
+      MessagePlugin.success("删除成功");
+      refreshMenu()
+    }
+  })
   MessagePlugin.success("删除成功");
 };
 
@@ -212,14 +217,22 @@ const columns = [
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     cell: (h, { row }) => (
       <div class="tdesign-table-demo__table-operations">
+              <t-link variant="text" hover="color" theme="primary" onClick={() => openDialog(row)}
+              >
+            编辑
+          </t-link>
         <t-popconfirm
           content="确认删除吗"
           onConfirm={() => onDeleteConfirm(row)}
         >
+        
           <t-link variant="text" hover="color" theme="danger">
             删除
           </t-link>
+      
         </t-popconfirm>
+
+        
       </div>
     ),
   },
@@ -257,10 +270,10 @@ const onExpandAllToggle = () => {
   expandAll.value = !expandAll.value;
   expandAll.value ? tableRef.value.expandAll() : tableRef.value.foldAll();
 };
-const dialogVisible=ref(false)
-const appendToRoot = () => {
-dialogVisible.value=true
-console.log('dialogVisible.value: ', dialogVisible.value);
+const menuEditorRef=ref(null)
+const openDialog = (row) => {
+console.log('row: ', row);
+menuEditorRef.value.showDialog(row)
   // data.value.push(newData);
   // tableRef.value.appendTo("", newData);
 

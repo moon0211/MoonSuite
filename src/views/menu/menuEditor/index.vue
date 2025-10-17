@@ -1,11 +1,17 @@
 <template>
   <t-dialog
-    v-model:visible="localVisible"
+    v-model:visible="dialogVisible"
     @close="handleModalClose"
     :header="menuEditorTitle"
     @Confirm="saveForm"
   >
-    <t-form ref="form" :rules="FORM_RULES" :data="formData" :colon="true">
+    <t-form
+      ref="form"
+      :rules="FORM_RULES"
+      :data="formData"
+      :colon="true"
+      @validate="onValidate"
+    >
       <t-form-item label="菜单名称" name="title">
         <t-input
           v-model="formData.title"
@@ -15,10 +21,10 @@
       </t-form-item>
 
       <t-form-item label="菜单类型" name="type">
-        <t-radio-group v-model="formData.type" :options="menuTypeOptions">
+        <t-radio-group v-model="formData.type" :options="menuTypeOptions" :disabled="formData.children?.length>0">
         </t-radio-group>
       </t-form-item>
-      <t-form-item label="根菜单" name="parentId" v-show="parentIdIsShow">
+      <t-form-item label="根菜单" name="parentId" v-show="!isSubmenu">
         <t-select
           v-model="formData.parentId"
           placeholder="请选择根菜单"
@@ -28,7 +34,7 @@
         >
         </t-select>
       </t-form-item>
-      <t-form-item label="path" name="value" help="示例：/menu">
+      <t-form-item label="path" name="value" help="示例：/menu" v-show="!isSubmenu">
         <t-input
           v-model="formData.value"
           clearable
@@ -39,6 +45,7 @@
         label="component"
         name="component"
         help="示例：views/menu/index.vue"
+        v-show="!isSubmenu"
       >
         <t-input
           v-model="formData.component"
@@ -87,7 +94,7 @@
   </t-dialog>
 </template>
 <script setup>
-import { ref, watch } from "vue";
+import { ref, watch, defineExpose } from "vue";
 import { useMenuEditor } from "./index.js";
 import { LinkIcon, JumpIcon } from "tdesign-icons-vue-next";
 const form = ref(null);
@@ -98,7 +105,7 @@ const props = defineProps({
     default: false,
   },
 });
-const emit = defineEmits(["update:visible","submit"]);
+const emit = defineEmits(["update:visible", "submit"]);
 
 const {
   menuEditorTitle,
@@ -109,10 +116,16 @@ const {
   resetForm,
   saveForm,
   parentIdIsShow,
-  localVisible,
+  dialogVisible,
   handleClose,
-  parentIdKeys
+  parentIdKeys,
+  showDialog,
+  onValidate,
+  isSubmenu
 } = useMenuEditor(form, props, emit);
+defineExpose({
+  showDialog,
+});
 const handleModalClose = () => {
   handleClose(resetForm);
 };

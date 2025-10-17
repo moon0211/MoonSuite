@@ -1,5 +1,5 @@
 import { ref, watch } from "vue";
-import { addMenu, getParentMenuList } from "@/api/menu";
+import { addMenu, getParentMenuList, updateMenu } from "@/api/menu";
 export function useMenuEditor(form, props, emit) {
     const menuEditorTitle = ref("新建菜单");
     const defaultType = 'menuItem';
@@ -18,14 +18,19 @@ export function useMenuEditor(form, props, emit) {
         sort: null,
     };
     const formData = ref({ ...defaultFormData });
-    const FORM_RULES = {
+    const FORM_RULES = ref({
         title: [{ required: true, message: "请输入标题", trigger: "blur" }],
         type: [{ required: true, message: "请选择类型", trigger: "change" }],
-        value: [{ required: true, message: "请输入path", trigger: "blur" }],
+        value: [{ required: true, message: "请输入path", trigger: "blur" },
+        {
+            pattern: /^\/[a-zA-Z]*$/,
+            message: "路径格式不正确，应以/开头且后续为英文字符，例如/menu或/",
+            trigger: "blur"
+        }],
         component: [{ required: true, message: "请输入component", trigger: "blur" }],
         isShow: [{ required: true, message: "请选择是否显示", trigger: "change" }],
         icon: [{ required: true, message: "请输入图标", trigger: "blur" }],
-    };
+    })
     const parentIdOptions = ref([]);
     const parentIdKeys = {
         label: "title",
@@ -48,44 +53,74 @@ export function useMenuEditor(form, props, emit) {
         formData.value = { ...defaultFormData };
     }
     const saveForm = () => {
-        let vaild = form.value.validate();
-        if (vaild) {
-            let parentId=formData.value.parentId??"0"
-            formData.value.parentId=parentId
-            addMenu({ formData: formData.value }).then((res) => {
-                if (res.success) {
+        form.value.validate();
+    };
+
+    const onValidate = ({ validateResult, firstError }) => {
+        if (validateResult === true) {
+            let parentId = formData.value.parentId ?? null
+            formData.value.parentId = parentId
+            console.log('formData.value: ', formData.value);
+
+            const isAdd = menuEditorTitle.value === '新建菜单'
+            const res = isAdd ? addMenu({ formData: formData.value }) : updateMenu({ formData: formData.value })
+            res.then((res) => {
+                if (res.code == 200) {
                     handleClose()
                     emit("submit")
                 }
             })
+        } else {
+            console.log('Validate Errors: ', firstError, validateResult);
         }
     };
 
-    const parentIdIsShow = ref(true)
+
+    const isSubmenu = ref(false)
 
     watch(() => formData.value.type, (newVal) => {
         if (newVal === 'submenu') {
-            parentIdIsShow.value = false;
+            isSubmenu.value = true;
+            // formData.value.parentId = null
+            formData.value.path = null
+            formData.value.component = null
+            FORM_RULES.value.component = [];
+            FORM_RULES.value.value = [];
         } else {
-            parentIdIsShow.value = true;
+            FORM_RULES.value.component = [{ required: true, message: "请输入component", trigger: "blur" }];
+            FORM_RULES.value.value = [{ required: true, message: "请输入path", trigger: "blur" }];
+            isSubmenu.value = false;
         }
     })
+    const showDialog = (row) => {
+        console.log('row: ', row);
+        if (row) {
+            menuEditorTitle.value = '编辑菜单';
+            formData.value = { ...row };
+        } else {
+            menuEditorTitle.value = '新建菜单';
+            resetForm();
+        }
+        dialogVisible.value = true;
+    }
+    const dialogVisible = ref(false);
 
-    const localVisible = ref(props.visible);
+    // watch(() => props.visible, (newVal) => {
+    //     dialogVisible.value = newVal;
+    //     if (newVal) {
+    //         fetchParentIdOptions();
+    //     }
+    // });
 
-    watch(() => props.visible, (newVal) => {
-        localVisible.value = newVal;
+    watch(() => dialogVisible.value, (newVal) => {
         if (newVal) {
             fetchParentIdOptions();
         }
-    });
-
-    watch(() => localVisible.value, (newVal) => {
         emit("update:visible", newVal);
     });
 
     const handleClose = () => {
-        localVisible.value = false;
+        dialogVisible.value = false;
         resetForm();
     };
 
@@ -99,9 +134,11 @@ export function useMenuEditor(form, props, emit) {
         defaultType,
         resetForm,
         saveForm,
-        parentIdIsShow,
-        localVisible,
+        dialogVisible,
         handleClose,
-        parentIdKeys
+        parentIdKeys,
+        showDialog,
+        onValidate,
+        isSubmenu
     };
 }

@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { getMenuList } from '@/api/menu'
+import router from '../router';
 export const useMenuStore = defineStore('menu', {
     state: () => ({
         menuList: [],//菜单列表（nav导航栏）
@@ -29,7 +30,31 @@ export const useMenuStore = defineStore('menu', {
                 this.isLoading = true;
                 this.error = null;
                 const res = await getMenuList({ format: type });
-                this.routerList = res.data;
+                let list = this.routerList = res.data;
+
+                list.forEach(menu => {
+
+                    if (menu.type === 'menuItem' && menu.value && menu.component) {
+                        const route = {
+                            path: menu.value,
+                            name: menu.title.replace(/[\s]/g, ''),
+                            component: () => import(`../${menu.component}`),
+                            meta: {
+                                title: menu.title,
+                                icon: menu.icon,
+                                id: menu.id,
+                                requiresAuth: true
+                            }
+                        }
+
+
+
+                        router.addRoute(route)
+                    }
+
+
+                })
+
                 return res.data;
             } catch (err) {
                 this.error = err;
@@ -44,7 +69,6 @@ export const useMenuStore = defineStore('menu', {
                 this.error = null;
                 const res = await getMenuList({ format: type, page, pageSize });
                 this.menuTable = res.data;
-                console.log('his.menuTable : ', this.menuTable);
                 return res.data;
             } catch (err) {
                 this.error = err;

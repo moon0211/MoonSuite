@@ -25,7 +25,6 @@ function generateRoutes(menuData) {
                     requiresAuth: true
                 }
             }
-            console.log('route: ', route.component);
 
             routes.push(route)
         }

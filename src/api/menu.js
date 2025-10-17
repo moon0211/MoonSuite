@@ -20,3 +20,17 @@ export function addMenu(params) {
         data: params
     })
 }
+export function updateMenu(params) {
+    return request({
+        url: '/menu/' + params.formData.id,
+        method: 'put',
+        data: params
+    })
+}
+
+export function deleteMenu(id) {
+    return request({
+        url: '/menu/' + id,
+        method: 'delete'
+    })
+}
