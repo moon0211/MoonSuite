@@ -63,11 +63,11 @@ export const useMenuStore = defineStore('menu', {
                 this.isLoading = false;
             }
         },
-        async fetchMenuTable(type = 'menu', page = 1, pageSize = 10) {
+        async fetchMenuTable(type = 'menu', page = 1, pageSize = 10,queryData = {}) {
             try {
                 this.isLoading = true;
                 this.error = null;
-                const res = await getMenuList({ format: type, page, pageSize });
+                const res = await getMenuList({ format: type, page, pageSize, queryData });
                 this.menuTable = res.data;
                 return res.data;
             } catch (err) {
