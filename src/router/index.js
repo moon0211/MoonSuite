@@ -22,7 +22,8 @@ function generateRoutes(menuData) {
                     title: menu.title,
                     icon: menu.icon,
                     id: menu.id,
-                    requiresAuth: true
+                    requiresAuth: true,
+                    fullScreen:menu.fullScreen
                 }
             }
 

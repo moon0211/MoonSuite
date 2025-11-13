@@ -43,8 +43,19 @@ export function useMenu(useMenuStore) {
       },
     },
     {
-      label: "状态",
+      label: "显示",
       field: "isShow",
+      type: "select",
+      options: [
+        { label: "全部", value: "" },
+        { label: "启用", value: true },
+        { label: "禁用", value: false },
+      ],
+      defaultValue: "",
+    },
+    {
+      label: "全屏",
+      field: "fullScreen",
       type: "select",
       options: [
         { label: "全部", value: "" },

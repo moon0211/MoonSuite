@@ -11,7 +11,11 @@
             :is="getComponent(item.type)"
             v-model="formData[item.field]"
             v-bind="getComponentProps(item)"
-            :placeholder="item.placeholder || `请输入${item.label}`"
+            :placeholder="
+              item.placeholder || item.type == 'input'
+                ? `请输入${item.label}`
+                : `请选择${item.label}`
+            "
           ></component>
         </div>
       </template>

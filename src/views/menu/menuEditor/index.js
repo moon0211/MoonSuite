@@ -16,6 +16,7 @@ export function useMenuEditor(form, props, emit) {
         isShow: true,
         icon: "tag",
         sort: null,
+        fullScreen: false,
     };
     const formData = ref({ ...defaultFormData });
     const FORM_RULES = ref({
@@ -29,6 +30,7 @@ export function useMenuEditor(form, props, emit) {
         }],
         component: [{ required: true, message: "请输入component", trigger: "blur" }],
         isShow: [{ required: true, message: "请选择是否显示", trigger: "change" }],
+        fullScreen: [{ required: true, message: "请选择是否全屏", trigger: "change" }],
         icon: [{ required: true, message: "请输入图标", trigger: "blur" }],
     })
     const parentIdOptions = ref([]);

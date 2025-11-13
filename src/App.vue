@@ -11,22 +11,28 @@ onMounted(fetchMenu);
 </script>
 
 <template>
-  <div class="layout">
-    <t-layout>
-      <Header />
+  <template v-if="$route.meta.fullScreen">
+    <router-view></router-view>
+  </template>
+  <template v-else>
+    <div class="layout">
       <t-layout>
-        <t-aside>
-          <Menu :menuData="menuStore.menuList" />
-        </t-aside>
+        <Header />
         <t-layout>
-          <router-view></router-view>
-          <p class="footer">Copyright @ 2025-{{ new Date().getFullYear() }} MoonSuite. All Rights
-            Reserved</p>
-        
+          <t-aside>
+            <Menu :menuData="menuStore.menuList" />
+          </t-aside>
+          <t-layout>
+            <router-view></router-view>
+            <p class="footer">
+              Copyright @ 2025-{{ new Date().getFullYear() }} MoonSuite. All
+              Rights Reserved
+            </p>
+          </t-layout>
         </t-layout>
       </t-layout>
-    </t-layout>
-  </div>
+    </div>
+  </template>
 </template>
 
 <style scoped>
@@ -37,11 +43,11 @@ onMounted(fetchMenu);
   height: 100vh;
   color: #000;
 }
-.footer{
+.footer {
   width: 100%;
   text-align: center;
   color: #909090;
-  padding:4px 0 12px 0;
+  padding: 4px 0 12px 0;
   margin: 0;
 }
 :deep(.t-layout__sider) {

@@ -21,7 +21,11 @@
       </t-form-item>
 
       <t-form-item label="菜单类型" name="type">
-        <t-radio-group v-model="formData.type" :options="menuTypeOptions" :disabled="formData.children?.length>0">
+        <t-radio-group
+          v-model="formData.type"
+          :options="menuTypeOptions"
+          :disabled="formData.children?.length > 0"
+        >
         </t-radio-group>
       </t-form-item>
       <t-form-item label="根菜单" name="parentId" v-show="!isSubmenu">
@@ -34,7 +38,12 @@
         >
         </t-select>
       </t-form-item>
-      <t-form-item label="path" name="value" help="示例：/menu" v-show="!isSubmenu">
+      <t-form-item
+        label="path"
+        name="value"
+        help="示例：/menu"
+        v-show="!isSubmenu"
+      >
         <t-input
           v-model="formData.value"
           clearable
@@ -64,13 +73,18 @@
         ></t-input>
       </t-form-item>
 
-      <t-form-item label="状态" name="isShow">
+      <t-form-item label="显示" name="isShow">
         <t-radio-group v-model="formData.isShow">
           <t-radio :value="true">启用</t-radio>
           <t-radio :value="false">禁用</t-radio>
         </t-radio-group>
       </t-form-item>
-
+      <t-form-item label="全屏" name="fullScreen">
+        <t-radio-group v-model="formData.fullScreen">
+          <t-radio :value="true">启用</t-radio>
+          <t-radio :value="false">禁用</t-radio>
+        </t-radio-group>
+      </t-form-item>
       <t-form-item label="icon" name="icon">
         <t-input
           v-model="formData.icon"
@@ -121,7 +135,7 @@ const {
   parentIdKeys,
   showDialog,
   onValidate,
-  isSubmenu
+  isSubmenu,
 } = useMenuEditor(form, props, emit);
 defineExpose({
   showDialog,
@@ -129,7 +143,7 @@ defineExpose({
 const handleModalClose = () => {
   handleClose(resetForm);
 };
-</script> 
+</script>
 <style scoped>
 .example {
   cursor: pointer;
