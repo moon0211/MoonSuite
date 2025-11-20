@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
-
 import { useMenuStore } from '@/store/menu'
+import { useUserStore } from "@/store/user";
+import { MessagePlugin } from "tdesign-vue-next";
 
 const routes = [
 ]
@@ -23,7 +24,7 @@ function generateRoutes(menuData) {
                     icon: menu.icon,
                     id: menu.id,
                     requiresAuth: true,
-                    fullScreen:menu.fullScreen
+                    fullScreen: menu.fullScreen
                 }
             }
 
@@ -34,7 +35,10 @@ function generateRoutes(menuData) {
 }
 
 router.beforeEach(async (to, from, next) => {
+    console.log('to: ', to);
+    console.log('from: ', from);
     const menuStore = useMenuStore();
+    const userStore = useUserStore();
 
     if (menuStore.hasAddedRoutes) {
         return next();
@@ -51,6 +55,16 @@ router.beforeEach(async (to, from, next) => {
         menuStore.hasAddedRoutes = true;
         const allRoutes = router.getRoutes()
         console.log('所有路由配置：', allRoutes)
+        if (!userStore.isLogin) {
+            MessagePlugin.warning('请先登录')
+            console.log('to.fullPath: ', to.fullPath);
+
+            const redirectPath = to.path === '/login' ? '/' : to.fullPath;
+            next({
+                path: '/login',
+                query: { redirect: redirectPath }
+            });
+        }
         return next(to.fullPath);
 
     } catch (error) {

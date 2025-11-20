@@ -87,7 +87,17 @@ export function useMenu(useMenuStore) {
     pageSize: 10,
     total: 0,
   });
+
+  const onDeleteConfirm = (row) => {
+    deleteMenu(row.id).then(async (res) => {
+      if (res.code === 200) {
+        MessagePlugin.success("删除成功");
+        await refreshMenu();
+      }
+    });
+  };
   const getData = async (currentPage = 1) => {
+    console.log("getData: ");
     pagination.current = currentPage;
     const menuStore = useMenuStore();
 
@@ -121,16 +131,6 @@ export function useMenu(useMenuStore) {
     indent: 25,
     expandTreeNodeOnClick: true,
   });
-
-  const onDeleteConfirm = (row) => {
-    deleteMenu(row.id).then((res) => {
-      if (res.success === 200) {
-        MessagePlugin.success("删除成功");
-        refreshMenu();
-      }
-    });
-    MessagePlugin.success("删除成功");
-  };
 
   const columns = [
     {
