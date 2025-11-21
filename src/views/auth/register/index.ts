@@ -11,7 +11,6 @@ export function useLogin(onStateChange?: (state: StateType) => void) {
   const state = ref<StateType>(StateType.LOGIN);
 
   const toggleState = () => {
-    console.log("触发");
     state.value =
       state.value === StateType.LOGIN ? StateType.REGISTER : StateType.LOGIN;
     if (onStateChange) {

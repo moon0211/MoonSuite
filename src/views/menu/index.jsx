@@ -1,10 +1,27 @@
 import { ref, reactive, onMounted } from "vue";
 import { MessagePlugin, Loading } from "tdesign-vue-next";
 import { ChevronRightIcon, ChevronDownIcon } from "tdesign-icons-vue-next";
+import { addMenu, getParentMenuList, updateMenu } from "@/api/menu";
 import { deleteMenu } from "@/api/menu";
-
 export function useMenu(useMenuStore) {
-  const queryFields = [
+  const parentIdOptions = ref([]);
+  const parentIdKeys = {
+    label: "title",
+    value: "id",
+  };
+  const fetchParentIdOptions = async () => {
+    try {
+      getParentMenuList().then((res) => {
+        if (res.code == 200) {
+          parentIdOptions.value = res.data;
+          queryFields.value[2].options = res.data;
+        }
+      });
+    } catch (error) {
+      throw new Error(error);
+    }
+  };
+  const queryFields = ref([
     {
       label: "菜单名称",
       field: "title",
@@ -30,7 +47,8 @@ export function useMenu(useMenuStore) {
       label: "根菜单",
       field: "parentId",
       type: "select",
-      options: [{ label: "全部", value: "" }],
+      options: parentIdOptions.value,
+      keys: parentIdKeys,
     },
     {
       label: "path",
@@ -64,7 +82,7 @@ export function useMenu(useMenuStore) {
       ],
       defaultValue: "",
     },
-  ];
+  ]);
 
   // 初始查询数据
   const initialQueryData = {
@@ -97,7 +115,6 @@ export function useMenu(useMenuStore) {
     });
   };
   const getData = async (currentPage = 1) => {
-    console.log("getData: ");
     pagination.current = currentPage;
     const menuStore = useMenuStore();
 
@@ -241,5 +258,8 @@ export function useMenu(useMenuStore) {
     onExpandAllToggle,
     menuEditorRef,
     openDialog,
+    fetchParentIdOptions,
+    parentIdKeys,
+    parentIdOptions,
   };
 }

@@ -11,6 +11,7 @@
             :is="getComponent(item.type)"
             v-model="formData[item.field]"
             v-bind="getComponentProps(item)"
+            :keys="item.keys"
             :placeholder="
               item.placeholder || item.type == 'input'
                 ? `请输入${item.label}`
@@ -19,6 +20,7 @@
           ></component>
         </div>
       </template>
+      <slot></slot>
     </div>
 
     <!-- 操作按钮 -->
@@ -75,6 +77,7 @@ const props = defineProps({
   },
 });
 const emit = defineEmits(["search", "reset"]);
+console.log('props: ', props.fields);
 
 const componentMap = {
   input: Input,

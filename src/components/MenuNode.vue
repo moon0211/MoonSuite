@@ -39,9 +39,7 @@ const props = defineProps({
 const emit = defineEmits(["router-change"]);
 
 const handleClick = (node) => {
-console.log('handleClick: ', node);
   if (node.type === "menuItem" && node) {
-    console.log("node: ", node);
     emit("router-change", node);
   }
 };

@@ -5,7 +5,8 @@
     :isloading="isloading"
     @search="search"
     :searchAfterReset="true"
-  ></QueryArea>
+  >
+  </QueryArea>
   <layout-content>
     <div>
       <div class="table-op">
@@ -39,47 +40,43 @@
 
 <script setup lang="jsx">
 import QueryArea from "@/components/QueryArea.vue";
-import menuEditor from "./menuEditor/index.vue"
+import menuEditor from "./menuEditor/index.vue";
 import { useMenu } from "./index.jsx";
-import { ref, reactive,  onMounted } from "vue";
-import {
-  EnhancedTable as TEnhancedTable,
-} from "tdesign-vue-next";
+import { ref, reactive, onMounted } from "vue";
+import { EnhancedTable as TEnhancedTable } from "tdesign-vue-next";
 
-import { useMenuStore } from '@/store/menu'
-
+import { useMenuStore } from "@/store/menu";
 
 const {
-        queryFields,
-        initialQueryData,
-        isloading,
-        search,
-        data,
-        expandAll,
-        pagination,
-        getData,
-        refreshMenu,
-        tableRef,
-        lazyLoadingData,
-        expandedTreeNodes,
-        treeConfig,
-        columns,
-        onPageChange,
-        treeExpandAndFoldIconRender,
-        onExpandAllToggle,
-        menuEditorRef,
-        openDialog } 
-        = useMenu(useMenuStore);
+  queryFields,
+  initialQueryData,
+  isloading,
+  search,
+  data,
+  expandAll,
+  pagination,
+  getData,
+  refreshMenu,
+  tableRef,
+  lazyLoadingData,
+  expandedTreeNodes,
+  treeConfig,
+  columns,
+  onPageChange,
+  treeExpandAndFoldIconRender,
+  onExpandAllToggle,
+  menuEditorRef,
+  openDialog,
+  fetchParentIdOptions,
+  parentIdKeys,
+  parentIdOptions,
+} = useMenu(useMenuStore);
 
 onMounted(() => {
   getData();
+  fetchParentIdOptions();
 });
-
-
-
-
 </script>
-
 
 <style>
 .tdesign-table-demo__table-operations .t-link {

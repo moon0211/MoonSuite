@@ -4,6 +4,15 @@ import { useUserStore } from "@/store/user";
 import { MessagePlugin } from "tdesign-vue-next";
 
 const routes = [
+    {
+        path: '/login',
+        name: 'Login',
+        component: () => import('@/views/auth/index.vue'),
+        meta: {
+            fullScreen: true,
+            isShow: false,
+        }
+    },
 ]
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -35,8 +44,6 @@ function generateRoutes(menuData) {
 }
 
 router.beforeEach(async (to, from, next) => {
-    console.log('to: ', to);
-    console.log('from: ', from);
     const menuStore = useMenuStore();
     const userStore = useUserStore();
 
@@ -53,14 +60,12 @@ router.beforeEach(async (to, from, next) => {
             router.addRoute(route);
         });
         menuStore.hasAddedRoutes = true;
-        const allRoutes = router.getRoutes()
-        console.log('所有路由配置：', allRoutes)
+        // const allRoutes = router.getRoutes()
+        // console.log('allRoutes: ', allRoutes);
         if (!userStore.isLogin) {
             MessagePlugin.warning('请先登录')
-            console.log('to.fullPath: ', to.fullPath);
-
             const redirectPath = to.path === '/login' ? '/' : to.fullPath;
-            next({
+            return next({
                 path: '/login',
                 query: { redirect: redirectPath }
             });

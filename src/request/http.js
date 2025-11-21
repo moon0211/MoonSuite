@@ -9,7 +9,6 @@ const request = axios.create({
         'Content-Type': 'application/json',
     }
 })
-// 2. 核心状态：避免重复刷新 Token（防止多请求同时触发刷新）
 let isRefreshing = false;
 // 存储等待刷新的请求队列（刷新成功后重新发起）
 let refreshRequestQueue = [];
@@ -42,43 +41,38 @@ function getUserStore() {
 }
 const refreshRequest = axios.create({
     baseURL: 'http://localhost:3000/api',
-    timeout: 10000, // 刷新 Token 可以设置更长超时时间
+    timeout: 10000,
     headers: {
         'Content-Type': 'application/json',
     }
 });
-// 6. 核心：刷新 Token 函数（完善逻辑）
 async function refreshToken() {
     if (isRefreshing) {
         return new Promise((resolve, reject) => {
             refreshRequestQueue.push({ resolve, reject });
+            setTimeout(() => {
+                reject(new Error('Token 刷新超时，请重试'));
+            }, 30000);
         });
     }
 
     isRefreshing = true;
     const storedRefreshToken = localStorage.getItem('refreshToken');
-
     try {
         if (!storedRefreshToken) {
             throw new Error('刷新 Token 不存在');
         }
-
-        const res = await refreshRequest.post('/refresh', { refreshToken: storedRefreshToken });
-        console.log('刷新接口返回：', res);
-
-        if (res.code === 4001) {
-            throw new Error('刷新 Token 已过期，请重新登录');
+        const payload = parseJWT(storedRefreshToken);
+        if (!payload || !payload.exp) {
+            throw new Error('Token 格式异常');
         }
-        if (res.code !== 200 || !res.data.accessToken) {
-            throw new Error('刷新 Token 接口返回异常');
+        const { data } = await refreshRequest.post('/refreshToken', { refreshToken: storedRefreshToken });
+        if (data.code === 401) {
+            logout();
         }
-
-        const { accessToken: newAccessToken, refreshToken: newRefreshToken } = res.data;
+        const { accessToken: newAccessToken, refreshToken: newRefreshToken } = data.data;
         localStorage.setItem('accessToken', newAccessToken);
         localStorage.setItem('refreshToken', newRefreshToken);
-        const userStore = getUserStore();
-        userStore?.setToken?.(newAccessToken, newRefreshToken);
-
         refreshRequestQueue.forEach(({ resolve }) => resolve(newAccessToken));
         refreshRequestQueue = [];
         return newAccessToken;
@@ -105,23 +99,25 @@ request.interceptors.request.use(async (config) => {
         }
 
         const expireTime = payload.exp * 1000;
+        // const expireTime = 1763629118307;
         const currentTime = Date.now();
-        console.log('currentTime >= expireTime: ', currentTime >= expireTime);
+        const qianExpire = 30 * 1000;
 
-        if (currentTime >= expireTime) {
+        if (currentTime >= expireTime - qianExpire) {
             try {
-                // 尝试刷新 Token，若失败会抛出错误
                 const newAccessToken = await refreshToken();
                 config.headers['Authorization'] = `Bearer ${newAccessToken}`;
             } catch (refreshError) {
-                // 刷新失败（如 refreshToken 过期），直接终止原请求
+                logout();
                 return Promise.reject(refreshError);
             }
         } else {
             config.headers['Authorization'] = `Bearer ${storedAccessToken}`;
         }
     } else {
-        logout();
+        if (!window.location.pathname.includes('/login')) {
+            logout();
+        }
     }
 
     return config;
@@ -129,43 +125,37 @@ request.interceptors.request.use(async (config) => {
     return Promise.reject(error);
 });
 
-// 8. 响应拦截器（完善 401 兜底处理）
 request.interceptors.response.use((response) => {
     const res = response.data;
-    // 后端自定义错误码（非 200 范围视为失败）
     if (res.code < 200 || res.code >= 300) {
         console.error('请求失败：' + (res.message || '请求错误'));
         return Promise.reject(new Error(res.message || '请求错误'));
     }
     return res;
 }, async (error) => {
-console.log('error: ', error);
     const originalRequest = error.config;
     const response = error.response;
-
-    // 情况1：401 错误（Token 无效/过期，且未重试过）
+    if (response?.status === 401) {
+        logout();
+    }
     if (response?.status === 401 && !originalRequest._retry) {
-        originalRequest._retry = true; // 标记为已重试，防止循环重试
+        originalRequest._retry = true;
         try {
-            // 尝试刷新 Token
             const newAccessToken = await refreshToken();
-            // 刷新成功：用新 Token 重新发起原请求
             originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
-            return request(originalRequest); // 重新请求
+            return request(originalRequest);
         } catch (refreshError) {
-            // 刷新失败：直接 reject，不再重试
+            logout();
             return Promise.reject(refreshError);
         }
     }
 
-    // 情况2：其他错误（非 401 或已重试过）
     const errorMsg = response?.data?.message || error.message || '网络请求失败';
-    console.error('请求失败：' + errorMsg);
+    console.error('请求失败2131：' + errorMsg);
     return Promise.reject(new Error(errorMsg));
 });
 
 
-// 登出函数
 function logout() {
     const userStore = getUserStore();
     userStore?.logout?.();
