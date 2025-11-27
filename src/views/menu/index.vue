@@ -78,13 +78,15 @@ onMounted(() => {
 });
 </script>
 
-<style>
-.tdesign-table-demo__table-operations .t-link {
-  padding: 0 8px;
-}
+<style scoped>
 .table-op {
   display: flex;
   justify-content: flex-end;
   align-items: center;
+}
+</style>
+<style>
+.tdesign-table-demo__table-operations .t-link {
+  padding: 0 8px;
 }
 </style>

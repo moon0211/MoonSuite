@@ -38,6 +38,7 @@ export function useLogin(onStateChange?: (state: StateType) => void) {
     let params = {
       username: username.value,
       password: password.value,
+      remember: remember.value,
     };
     isLoading.value = true;
     apiLogin(params)

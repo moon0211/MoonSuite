@@ -33,5 +33,6 @@ declare module 'vue' {
     TRadioGroup: typeof import('tdesign-vue-next')['RadioGroup']
     TSelect: typeof import('tdesign-vue-next')['Select']
     TSubmenu: typeof import('tdesign-vue-next')['Submenu']
+    TTable: typeof import('tdesign-vue-next')['Table']
   }
 }

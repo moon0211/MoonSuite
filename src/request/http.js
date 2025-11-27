@@ -70,9 +70,8 @@ async function refreshToken() {
         if (data.code === 401) {
             logout();
         }
-        const { accessToken: newAccessToken, refreshToken: newRefreshToken } = data.data;
+        const { accessToken: newAccessToken } = data.data;
         localStorage.setItem('accessToken', newAccessToken);
-        localStorage.setItem('refreshToken', newRefreshToken);
         refreshRequestQueue.forEach(({ resolve }) => resolve(newAccessToken));
         refreshRequestQueue = [];
         return newAccessToken;

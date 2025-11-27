@@ -1,8 +1,7 @@
 import { ref, reactive, onMounted } from "vue";
 import { MessagePlugin, Loading } from "tdesign-vue-next";
 import { ChevronRightIcon, ChevronDownIcon } from "tdesign-icons-vue-next";
-import { addMenu, getParentMenuList, updateMenu } from "@/api/menu";
-import { deleteMenu } from "@/api/menu";
+import { addMenu, getParentMenuList, updateMenu, deleteMenu } from "@/api/menu";
 export function useMenu(useMenuStore) {
   const parentIdOptions = ref([]);
   const parentIdKeys = {
@@ -94,7 +93,6 @@ export function useMenu(useMenuStore) {
   const search = (data) => {
     queryData.value = data;
     getData(1);
-    console.log("我是父组件", data);
   };
 
   const data = ref([]);
@@ -115,20 +113,26 @@ export function useMenu(useMenuStore) {
     });
   };
   const getData = async (currentPage = 1) => {
+    isloading.value = true;
     pagination.current = currentPage;
     const menuStore = useMenuStore();
+    try {
+      await menuStore.fetchMenuTable(
+        "menu",
+        currentPage,
+        pagination.pageSize,
+        queryData.value
+      );
 
-    await menuStore.fetchMenuTable(
-      "menu",
-      currentPage,
-      pagination.pageSize,
-      queryData.value
-    );
-
-    data.value = menuStore.menuTable.data;
-    pagination.total =
-      menuStore.menuTable.totalPages * menuStore.menuTable.totalItems;
-    return menuStore.menuTable.data;
+      data.value = menuStore.menuTable.data;
+      pagination.total =
+        menuStore.menuTable.totalPages * menuStore.menuTable.totalItems;
+      return menuStore.menuTable.data;
+    } catch (error) {
+      throw new Error(error);
+    } finally {
+      isloading.value = false;
+    }
   };
   const refreshMenu = async () => {
     const menuStore = useMenuStore();
