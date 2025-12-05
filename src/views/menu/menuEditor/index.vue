@@ -113,12 +113,6 @@ import { useMenuEditor } from "./index.js";
 import { LinkIcon, JumpIcon } from "tdesign-icons-vue-next";
 const form = ref(null);
 
-const props = defineProps({
-  visible: {
-    type: Boolean,
-    default: false,
-  },
-});
 const emit = defineEmits(["update:visible", "submit"]);
 
 const {
@@ -136,12 +130,12 @@ const {
   showDialog,
   onValidate,
   isSubmenu,
-} = useMenuEditor(form, props, emit);
+} = useMenuEditor(form, emit);
 defineExpose({
   showDialog,
 });
 const handleModalClose = () => {
-  handleClose(resetForm);
+  handleClose();
 };
 </script>
 <style scoped>

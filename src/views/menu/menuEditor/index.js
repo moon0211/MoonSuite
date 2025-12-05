@@ -1,6 +1,6 @@
 import { ref, watch } from "vue";
 import { addMenu, getParentMenuList, updateMenu } from "@/api/menu";
-export function useMenuEditor(form, props, emit) {
+export function useMenuEditor(form, emit) {
     const menuEditorTitle = ref("新建菜单");
     const defaultType = 'menuItem';
     const menuTypeOptions = ref([
@@ -107,12 +107,7 @@ export function useMenuEditor(form, props, emit) {
     }
     const dialogVisible = ref(false);
 
-    // watch(() => props.visible, (newVal) => {
-    //     dialogVisible.value = newVal;
-    //     if (newVal) {
-    //         fetchParentIdOptions();
-    //     }
-    // });
+
 
     watch(() => dialogVisible.value, (newVal) => {
         if (newVal) {

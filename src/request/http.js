@@ -127,6 +127,7 @@ request.interceptors.request.use(async (config) => {
 request.interceptors.response.use((response) => {
     const res = response.data;
     if (res.code < 200 || res.code >= 300) {
+        MessagePlugin.error(res.message || '请求错误');
         console.error('请求失败：' + (res.message || '请求错误'));
         return Promise.reject(new Error(res.message || '请求错误'));
     }

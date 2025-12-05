@@ -30,16 +30,47 @@ export function useRole() {
   };
   const queryFields = ref([
     {
+      label: "角色名称",
+      field: "name",
+      type: "input",
+      placeholder: "请输入角色名称",
+    },
+    {
+      label: "角色编码",
+      field: "encode",
+      type: "input",
+      placeholder: "请输入角色编码",
+    },
+    {
       label: "权限名称",
-      field: "title",
+      field: "permissionIds",
       type: "select",
       placeholder: "请输入权限名称",
       defaultValue: "",
       options: [],
+      multiple: true,
       keys: permissionsKeys,
       props: {
         clearable: true,
       },
+    },
+    {
+      label: "状态",
+      field: "status",
+      type: "select",
+      placeholder: "请选择",
+      options: [
+        { label: "全部", value: "" },
+        { label: "启用", value: RoleStatus.ACTIVE },
+        { label: "禁用", value: RoleStatus.INACTIVE },
+      ],
+    },
+    {
+      label: "创建时间",
+      field: "createdAt",
+      type: "dateRange",
+      placeholder: "请选择",
+      defaultValue: [],
     },
   ]);
 
@@ -96,6 +127,7 @@ export function useRole() {
           <t-link
             variant="text"
             hover="color"
+            disabled={row.builtIn}
             theme="primary"
             onClick={() => openDialog(row)}
           >
@@ -116,10 +148,9 @@ export function useRole() {
   const getData = async () => {
     try {
       isloading.value = true;
-      getRolesData().then((res) => {
+      getRolesData({ ...queryData.value }).then((res) => {
         if (res.code == 200) {
           data.value = res.data;
-          console.log("data.value : ", data.value);
         }
       });
     } catch (error) {
@@ -128,23 +159,25 @@ export function useRole() {
       isloading.value = false;
     }
   };
-  const menuEditorRef = ref(null);
+  const roleEditorRef = ref(null);
   const openDialog = (row) => {
-    menuEditorRef.value.showDialog(row);
+    roleEditorRef.value.showDialog(row);
   };
 
   const onDeleteConfirm = (row) => {
-    // deleteMenu(row.id).then(async (res) => {
-    //   if (res.code === 200) {
-    //     MessagePlugin.success("删除成功");
-    //     await refreshMenu();
-    //   }
-    // });
+    delRole(row.id).then(async (res) => {
+      if (res.code === 200) {
+        MessagePlugin.success(res.message || "删除成功");
+        await getData();
+      } else {
+        MessagePlugin.error(res.message || "删除失败");
+      }
+    });
   };
 
   const handleStatusChange = (id, checked, row) => {
-    const status =
-      checked == RoleStatus.ACTIVE ? RoleStatus.INACTIVE : RoleStatus.ACTIVE;
+    console.log("checked: ", checked);
+    const status = checked ? RoleStatus.ACTIVE : RoleStatus.INACTIVE;
     updateRoleStatus({ id, status }).then(async (res) => {
       if (res.code === 200) {
         MessagePlugin.success(res.message || "修改成功");
@@ -152,6 +185,7 @@ export function useRole() {
       }
     });
   };
+
   return {
     queryFields,
     isloading,
@@ -160,5 +194,7 @@ export function useRole() {
     columns,
     data,
     fetchPermissionsOptions,
+    openDialog,
+    roleEditorRef
   };
 }

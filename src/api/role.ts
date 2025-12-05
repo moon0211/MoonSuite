@@ -50,9 +50,9 @@ export function updateRole(params: UpdateRoleParams) {
   });
 }
 
-export function delRole(params: { id: string }) {
+export function delRole(id: string) {
   return request({
-    url: `/role/${params.id}`,
+    url: `/role/${id}`,
     method: "delete",
   });
 }

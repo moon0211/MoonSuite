@@ -12,6 +12,7 @@
             v-model="formData[item.field]"
             v-bind="getComponentProps(item)"
             :keys="item.keys"
+            :multiple="item.multiple"
             :placeholder="
               item.placeholder || item.type == 'input'
                 ? `请输入${item.label}`
@@ -47,6 +48,7 @@ import {
   Input,
   Select,
   DatePicker,
+  DateRangePicker,
   TimePicker,
   CheckboxGroup,
   RadioGroup,
@@ -77,12 +79,12 @@ const props = defineProps({
   },
 });
 const emit = defineEmits(["search", "reset"]);
-console.log('props: ', props.fields);
 
 const componentMap = {
   input: Input,
   select: Select,
   date: DatePicker,
+  dateRange: DateRangePicker,
   time: TimePicker,
   checkboxGroup: CheckboxGroup,
   radioGroup: RadioGroup,
@@ -103,6 +105,8 @@ const initFormData = () => {
     if (formData.value[field.field] === undefined) {
       if (field.type === "checkboxGroup") {
         initial[field.field] = field.defaultValue ?? [];
+      } else if (field.type === "dateRange") {
+        initial[field.field] = field.defaultValue ?? [];
       } else {
         initial[field.field] = field.defaultValue ?? "";
       }
@@ -119,7 +123,7 @@ watch(
   () => {
     initFormData();
   },
-  { deep: true, immediate: true }
+  { deep: true }
 );
 
 const getComponentProps = (field) => {
@@ -134,6 +138,9 @@ const getComponentProps = (field) => {
       props.data = field.options || [];
       break;
     case "date":
+      props.format = field.format || "YYYY-MM-DD";
+      break;
+    case "dateRange":
       props.format = field.format || "YYYY-MM-DD";
       break;
     case "time":
