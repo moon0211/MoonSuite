@@ -10,7 +10,7 @@ export const useRoleEditor = (form, emit) => {
     description: "采购模块，库存更新模块",
     createAt: "2021-01-01 00:00:00",
     status: RoleStatus.INACTIVE,
-    permissionIds: [1, 2, 3],
+    permissions: [1, 2, 3],
   };
   const id = ref<string | null>(null);
   const FORM_RULES = ref({

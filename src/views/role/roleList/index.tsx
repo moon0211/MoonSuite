@@ -11,22 +11,22 @@ import {
 } from "@/api/role";
 
 export function useRole() {
-  const PermissionsOptions = ref([]);
-  const permissionsKeys = {
-    label: "desc",
-    value: "id",
-  };
+  const permissionsOptions = ref([]);
   const fetchPermissionsOptions = async () => {
     try {
       getPermissionsData().then((res) => {
         if (res.code == 200) {
-          PermissionsOptions.value = res.data;
-          queryFields.value[0].options = res.data;
+          permissionsOptions.value = res.data;
+          queryFields.value[2].options = res.data;
         }
       });
     } catch (error) {
       throw new Error(error);
     }
+  };
+  const permissionsOptionsKeys = {
+    label: "name",
+    value: "id",
   };
   const queryFields = ref([
     {
@@ -43,13 +43,13 @@ export function useRole() {
     },
     {
       label: "权限名称",
-      field: "permissionIds",
-      type: "select",
+      field: "permissions",
+      type: "treeSelect",
       placeholder: "请输入权限名称",
       defaultValue: "",
+      keys: permissionsOptionsKeys,
       options: [],
       multiple: true,
-      keys: permissionsKeys,
       props: {
         clearable: true,
       },
@@ -118,6 +118,20 @@ export function useRole() {
       },
     },
     {
+      colKey: "permissions",
+      title: "权限",
+      cell: (h, { row }) => (
+        <t-link
+          variant="text"
+          hover="color"
+          style="color: #0052d9"
+          onClick={() => openPermissionDialog(row)}
+        >
+          {row.permissions?.length ? row.permissions.join(", ") : "设置"}
+        </t-link>
+      ),
+    },
+    {
       colKey: "operate",
       title: "操作",
       // 增、删、改、查 等操作
@@ -163,7 +177,10 @@ export function useRole() {
   const openDialog = (row) => {
     roleEditorRef.value.showDialog(row);
   };
-
+  const permissionEditorRef = ref(null);
+  const openPermissionDialog = (row) => {
+    permissionEditorRef.value.showDialog(row);
+  };
   const onDeleteConfirm = (row) => {
     delRole(row.id).then(async (res) => {
       if (res.code === 200) {
@@ -195,6 +212,9 @@ export function useRole() {
     data,
     fetchPermissionsOptions,
     openDialog,
-    roleEditorRef
+    roleEditorRef,
+    permissionEditorRef,
+    permissionsOptions,
+    permissionsOptionsKeys,
   };
 }

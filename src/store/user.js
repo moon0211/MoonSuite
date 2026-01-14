@@ -9,9 +9,7 @@ export const useUserStore = defineStore('user', {
         }
     },
     getters: {
-        // 实时计算：每次访问 isLogin 都会检查 localStorage
         isLogin() {
-            // 修正拼写：accessToken（如果确实是 assessToken 可保留，但不推荐）
             return !!localStorage.getItem('accessToken')
         }
     },

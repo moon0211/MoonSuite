@@ -18,6 +18,12 @@
       row-key="id"
     />
     <roleEditor ref="roleEditorRef" @submit="search" />
+    <permissionEditor
+      ref="permissionEditorRef"
+      @submit="search"
+      :data="permissionsOptions"
+      :keys="permissionsOptionsKeys"
+    />
   </layout-content>
 </template>
 <script setup lang="jsx">
@@ -25,6 +31,7 @@ import QueryArea from "@/components/QueryArea.vue";
 import { useRole } from "./index.tsx";
 import { ref, reactive, onMounted } from "vue";
 import roleEditor from "./roleEditor/index.vue";
+import permissionEditor from "./permissionEditor/index.vue";
 const {
   queryFields,
   isloading,
@@ -35,7 +42,11 @@ const {
   data,
   openDialog,
   roleEditorRef,
+  permissionEditorRef,
+  permissionsOptions,
+  permissionsOptionsKeys
 } = useRole();
+      console.log('permissionsOptions: ', permissionsOptions);
 
 onMounted(() => {
   getData();

@@ -151,7 +151,7 @@ request.interceptors.response.use((response) => {
     }
 
     const errorMsg = response?.data?.message || error.message || '网络请求失败';
-    console.error('请求失败2131：' + errorMsg);
+    console.error('from http.js 请求失败：' + errorMsg);
     return Promise.reject(new Error(errorMsg));
 });
 

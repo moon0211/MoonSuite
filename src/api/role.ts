@@ -7,7 +7,7 @@ export interface RoleFormParams {
   encode: string;
   name: string;
   description: string;
-  permissionIds: number[];
+  permissions: number[];
   status: RoleStatus;
   users?: number[];
 }
@@ -24,6 +24,12 @@ export interface RoleItem extends RoleFormParams {
   correlation: boolean;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface assignPermissionsParams {
+  id: string;
+  permissions: string[];
+  updateBy: string;
 }
 
 export function getRolesData(params) {
@@ -62,5 +68,12 @@ export function updateRoleStatus(params: { id: string; status: RoleStatus }) {
     url: `/role/${params.id}/status`,
     method: "patch",
     data: { status: params.status },
+  });
+}
+export function assignRolePermissions(params: assignPermissionsParams) {
+  return request({
+    url: `/role/${params.id}/permissions`,
+    method: "patch",
+    data: { permissions: params.permissions, updateBy: params.updateBy },
   });
 }
